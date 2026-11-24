@@ -901,7 +901,8 @@ function beforeSubmit(){
         Profile image submitted by <?php echo $User; ?></h3>
     </div>
 
-  <form class="form-horizontal" action="<?php echo plugins_url('templates/processupload.php', dirname(__FILE__)); ?>" method="post" enctype="multipart/form-data" id="MyUploadForm">
+  <form class="form-horizontal" action="<?php echo plugins_url('templates/processupload.php', dirname(__FILE__)); ?>
+<?php wp_nonce_field( 'tngapi_upload', '_tngapi_nonce' ); ?>" method="post" enctype="multipart/form-data" id="MyUploadForm">
 <input type="" hidden name="title" value="<?php echo "Person Profile ID=". $linkPerson; ?>" />
 <input type="" hidden name="Desc" value='<?php echo "Submit Profile Image for <br />". $name; ?>' />
 <fieldset>

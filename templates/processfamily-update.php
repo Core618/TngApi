@@ -1,11 +1,12 @@
 <?php
 require_once '../../../../wp-load.php';
+require_once __DIR__ . '/process-guard.php';
+upavadi_tngapi_guard_request( 'tngapi_family_update' );
 require_once __DIR__ . '/../autoload.php';
 require_once '../../../../wp-config.php';
 
 header('Location: /thank-you');
 //error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 global $wpdb;
 $people_table = $wpdb->prefix . "tng_people";

@@ -1,9 +1,11 @@
 <?php
 require_once '../../../../wp-load.php';
+require_once __DIR__ . '/process-guard.php';
+upavadi_tngapi_guard_request( 'tngapi_family_add' );
 require_once '../../../../wp-config.php';
 header('Location: /thank-you');
 global $wpdb;
-$wpdb->show_errors();
+// Database errors are logged, not shown to visitors (was: $wpdb->show_errors();)
 
 $people_table = $wpdb->prefix . "tng_people";
 $families_table = $wpdb->prefix . "tng_families";
