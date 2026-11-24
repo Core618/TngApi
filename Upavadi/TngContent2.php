@@ -1220,7 +1220,7 @@ SQL;
 		</div>
 		<form action=''  method="post">	
 		<div> 	
-			<input type="text"  style="width: 250px" name="tng_path" value= '<?php if(isset($_POST['tng_path'])) echo $_POST['tng_path'] ?>' placeholder='TNG Root Path:'>
+			<input type="text"  style="width: 250px" name="tng_path" value= '<?php if(isset($_POST['tng_path'])) echo esc_attr(wp_unslash($_POST['tng_path'])); ?>' placeholder='TNG Root Path:'>
 			TNG Root Path is absolute path to TNG. You may look this up from TNG Admin Setup or in config.php in TNG folder.
 		</div>
 		<?php

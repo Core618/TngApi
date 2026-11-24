@@ -7,7 +7,7 @@ class Upavadi_Shortcode_Manniversaries extends Upavadi_Shortcode_AbstractShortco
     public function show()
     {
          $this->content->init();
-        $monthyear = filter_input(INPUT_GET, 'monthyear', FILTER_SANITIZE_SPECIAL_CHARS);
+        $monthyear = preg_replace('/[^0-9\/.-]/', '', (string) filter_input(INPUT_GET, 'monthyear')); // date: digits and / . - only
         $currentPerson = $this->content->getCurrentPersonId();
 						
 		if ($monthyear == "") {

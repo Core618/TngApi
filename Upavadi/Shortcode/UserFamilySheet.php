@@ -8,7 +8,7 @@ class Upavadi_Shortcode_UserFamilySheet extends Upavadi_Shortcode_AbstractShortc
     //do shortcode Add Family form
     public function show()
     {
-        $personId = filter_input(INPUT_GET, 'personId', FILTER_SANITIZE_SPECIAL_CHARS);
+        $personId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) filter_input(INPUT_GET, 'personId')); // TNG IDs: letters, digits, _ and - only
         $currentuserLogin = wp_get_current_user();
         $UserLogin = $currentuserLogin->user_login;
         $changeSets = $this->getSubmissions($UserLogin);

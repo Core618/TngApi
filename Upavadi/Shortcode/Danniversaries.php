@@ -7,7 +7,7 @@ class Upavadi_Shortcode_Danniversaries extends Upavadi_Shortcode_AbstractShortco
     public function show()
     {
         $this->content->init();
-		$monthyear = filter_input(INPUT_GET, 'monthyear', FILTER_SANITIZE_SPECIAL_CHARS);
+		$monthyear = preg_replace('/[^0-9\/.-]/', '', (string) filter_input(INPUT_GET, 'monthyear')); // date: digits and / . - only
 						
 		if ($monthyear == "") {
         $month = date('m');

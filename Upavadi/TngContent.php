@@ -1208,6 +1208,10 @@ SQL;
     public function searchPerson($searchFirstName, $searchLastName)
     {
         $wheres = array();
+        // Escape for SQL (the input filter does not escape backslashes).
+        $db = $this->getDbLink();
+        $searchFirstName = $db->real_escape_string((string) $searchFirstName);
+        $searchLastName = $db->real_escape_string((string) $searchLastName);
         if ($searchFirstName) {
             $wheres[] = "firstname LIKE '%{$searchFirstName}%'";
         }
@@ -1324,6 +1328,9 @@ SQL;
       //$photopath = get_option('tng-api-tng-photo-folder');
       $success = "";
         if(isset ($_POST['Update_api_Paths'])) {
+            // CSRF protection: only an administrator, using this form, may change these settings.
+            if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'You do not have permission to change these settings.' ); }
+            check_admin_referer( 'tngapi_settings', '_tngapi_settings_nonce' );
             $tngFileError = $this->checkForTngApiPath();
             $tngPromt = "";
             if ($tngFileError[0] == true) {
@@ -1352,7 +1359,8 @@ SQL;
 		<div>
 			<h2>TngApi: We need to know where TNG is installed:</h2>
 		</div>
-		<form action=''  method="post">	
+		<form action=''  method="post">
+		<?php wp_nonce_field( 'tngapi_settings', '_tngapi_settings_nonce' ); ?>	
 		<div> 	
 			<input type="text"  style="width: 250px" name="tng_api_path" value= '<?php echo $tngPath; ?>' placeholder='TNG Root Path:'>
 			TNG Root Path is absolute path to TNG. You may look this up from TNG Admin Setup or in config.php in TNG folder.
@@ -1388,6 +1396,9 @@ SQL;
         var_dump($dbPassword);
         
         if (isset ($_POST['Update_credentials']))  {
+            // CSRF protection: only an administrator, using this form, may change these settings.
+            if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'You do not have permission to change these settings.' ); }
+            check_admin_referer( 'tngapi_settings', '_tngapi_settings_nonce' );
             $tngPrompt = "";
             $success = "";
             $dbHost = $_POST['tng_db_host'];
@@ -1423,7 +1434,8 @@ SQL;
     	<div>
 			<h2>TngApi: Please check TNG DB Credentials:</h2>
 		</div>
-        <form action=''  method="post">	
+        <form action=''  method="post">
+		<?php wp_nonce_field( 'tngapi_settings', '_tngapi_settings_nonce' ); ?>	
 		<div> 	
 			<input type="text"  style="<?php echo $fieldColor; ?>" name="tng_db_host" value= '<?php echo $dbHost; ?>' placeholder='DB Host Name'>
 			Host Name: You may look these up from TNG Admin Setup or in config.php in TNG folder.

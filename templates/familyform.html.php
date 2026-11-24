@@ -186,7 +186,8 @@
 <script type="text/javascript" src="<?php echo plugins_url('js/jquery.smartWizard.js', dirname(__FILE__)); ?>"></script>
 <style type="text/css" media="all">
 </style>
-<form id="edit-family-form" action = "<?php echo plugins_url('templates/processfamily-update.php', dirname(__FILE__)); ?>" method = "POST">
+<form id="edit-family-form" action = "<?php echo plugins_url('templates/processfamily-update.php', dirname(__FILE__)); ?>
+<?php wp_nonce_field( 'tngapi_family_update', '_tngapi_nonce' ); ?>" method = "POST">
 <input type="hidden" name="User" value="<?php echo $UserLogin; ?>" />
 <input type="hidden" name="gedcom" value="<?php echo $person_gedcom; ?>" />
 <input type="hidden" name="personID" value="<?php echo $personID; ?>" />

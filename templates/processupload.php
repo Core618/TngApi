@@ -1,6 +1,8 @@
 <?php
 
 require_once '../../../../wp-load.php';
+require_once __DIR__ . '/process-guard.php';
+upavadi_tngapi_guard_request( 'tngapi_upload' );
 require_once '../autoload.php';
 $end_msg = " Thanks for submitting. Once the Image is processed, it will be available in the Family Tree. I will let you know by email, once I have done this.";
 $content = Upavadi_TngContent::instance();
@@ -43,27 +45,32 @@ if (isset($_POST)) {
     }
 
     // Random number will be added after image name
-    $RandomNumber = rand(0, 9999999999);
+    $RandomNumber = wp_rand(0, 999999999);
 
-    $ImageName = str_replace(' ', '-', strtolower($_FILES['ImageFile']['name'])); //get image name
-    $ImageSize = $_FILES['ImageFile']['size']; // get original image size
     $TempSrc = $_FILES['ImageFile']['tmp_name']; // Temp name of image file stored in PHP tmp folder
-    $ImageType = $_FILES['ImageFile']['type']; //get file type, returns "image/png", image/jpeg, text/plain etc.
-    //Let's check allowed $ImageType, we use PHP SWITCH statement here
-    switch (strtolower($ImageType)) {
+    $ImageSize = $_FILES['ImageFile']['size']; // get original image size
+
+    // Work out the real image type from the file contents, not from the
+    // browser-supplied MIME type or filename, which an attacker controls.
+    $ImageInfo = @getimagesize($TempSrc);
+    $ImageType = is_array($ImageInfo) && isset($ImageInfo['mime']) ? strtolower($ImageInfo['mime']) : '';
+    $AllowedTypes = array('image/png' => 'png', 'image/gif' => 'gif', 'image/jpeg' => 'jpg');
+    if (!isset($AllowedTypes[$ImageType])) {
+        die('Unsupported File!'); //output error and exit
+    }
+    switch ($ImageType) {
         case 'image/png':
-            //Create a new image from file 
-            $CreatedImage = imagecreatefrompng($_FILES['ImageFile']['tmp_name']);
+            $CreatedImage = imagecreatefrompng($TempSrc);
             break;
         case 'image/gif':
-            $CreatedImage = imagecreatefromgif($_FILES['ImageFile']['tmp_name']);
+            $CreatedImage = imagecreatefromgif($TempSrc);
             break;
         case 'image/jpeg':
-        case 'image/pjpeg':
-            $CreatedImage = imagecreatefromjpeg($_FILES['ImageFile']['tmp_name']);
+            $CreatedImage = imagecreatefromjpeg($TempSrc);
             break;
-        default:
-            die('Unsupported File!'); //output error and exit
+    }
+    if (!$CreatedImage) {
+        die('Unsupported File!');
     }
 
     //PHP getimagesize() function returns height/width from image file stored in PHP tmp folder.
@@ -71,12 +78,16 @@ if (isset($_POST)) {
     //list assign svalues to $CurWidth,$CurHeight
     list($CurWidth, $CurHeight) = getimagesize($TempSrc);
 
-    //Get file extension from Image name, this will be added after random name
-    $ImageExt = substr($ImageName, strrpos($ImageName, '.'));
-    $ImageExt = str_replace('.', '', $ImageExt);
+    // The saved file always gets the extension of its real image type, so a
+    // name such as "photo.php" can never produce an executable file.
+    $ImageExt = $AllowedTypes[$ImageType];
 
-    //remove extension from filename
-    $ImageName = preg_replace("/\\.[^.\\s]{3,4}$/", "", $ImageName);
+    // Safe base name: original name without extension, cleaned by WordPress.
+    // Dots are replaced too, so no "double extension" (e.g. photo.php.jpg) survives.
+    $ImageName = sanitize_file_name(str_replace('.', '-', strtolower(pathinfo($_FILES['ImageFile']['name'], PATHINFO_FILENAME))));
+    if ($ImageName === '') {
+        $ImageName = 'image';
+    }
 
     //Construct a new name with random number and extension.
     $NewImageName = $ImageName . '-' . $RandomNumber . '.' . $ImageExt;

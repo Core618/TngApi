@@ -100,7 +100,8 @@
 <script type="text/javascript" src="<?php echo plugins_url('js/jquery.smartWizard.js', dirname(__FILE__)); ?>"></script>
 <style type="text/css" media="all">
 </style> 
-<form id="add-family-form" action = "<?php echo plugins_url('templates/processfamily-add.php', dirname(__FILE__)); ?>" method = "POST">
+<form id="add-family-form" action = "<?php echo plugins_url('templates/processfamily-add.php', dirname(__FILE__)); ?>
+<?php wp_nonce_field( 'tngapi_family_add', '_tngapi_nonce' ); ?>" method = "POST">
 <input type="hidden" name="User" value="<?php echo $UserLogin; ?>" />
 <input type="hidden" name="personID" value="<?php echo $person['personID']; ?>" />
 <input type="hidden" name="gedcom" value="<?php echo $person_gedcom; ?>" />

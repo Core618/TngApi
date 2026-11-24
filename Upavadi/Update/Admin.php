@@ -162,6 +162,7 @@ class Upavadi_Update_Admin
                     <div class="postbox-container">
                         <div class="meta-box-sortables">
                             <form method="POST">
+                            <?php wp_nonce_field( 'tngapi_review', '_tngapi_review_nonce' ); ?>
                                 <?php
                                	$personId = $changeSet->getHeadPersonId();
                                 $this->showPerson($changeSet, $personId, 'Person (' . $personId . ')');
@@ -479,6 +480,14 @@ class Upavadi_Update_Admin
 //        print_r($changeSet->getDiff());
 //        echo "</pre>";
         $post = filter_input_array(INPUT_POST);
+        // CSRF protection: accepting/discarding changes to the tree requires an
+        // administrator submitting this screen's own form.
+        if (isset($post['discard']) || isset($post['accept'])) {
+            if (!current_user_can('manage_options')) {
+                wp_die('You do not have permission to review submissions.');
+            }
+            check_admin_referer('tngapi_review', '_tngapi_review_nonce');
+        }
         if (isset($post['discard'])) {
             $changeSet->discard();
             $url = admin_url('admin.php?page=tng_api_submissions');

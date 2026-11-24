@@ -77,7 +77,8 @@ function beforeSubmit(){
   <!-- Input Form -->
   <div id="upload-wrapper" style="max-width: 700px; margin: auto" >
 
-  <form class="form-horizontal" action="<?php echo plugins_url('templates/processupload.php', dirname(__FILE__)); ?>" method="post" enctype="multipart/form-data" id="MyUploadForm">
+  <form class="form-horizontal" action="<?php echo plugins_url('templates/processupload.php', dirname(__FILE__)); ?>
+<?php wp_nonce_field( 'tngapi_upload', '_tngapi_nonce' ); ?>" method="post" enctype="multipart/form-data" id="MyUploadForm">
   <fieldset>
     <div class="form-group upload-control-group">
 
