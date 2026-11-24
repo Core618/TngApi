@@ -7,7 +7,7 @@ class Upavadi_Shortcode_PersonNotes extends Upavadi_Shortcode_AbstractShortcode
     public function show()
     {
         $this->content->init();
-        $personId = filter_input(INPUT_GET, 'personId', FILTER_SANITIZE_SPECIAL_CHARS);
+        $personId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) filter_input(INPUT_GET, 'personId')); // TNG IDs: letters, digits, _ and - only
         $context = array(
             'personId' => $personId
         );

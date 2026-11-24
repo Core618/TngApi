@@ -1208,6 +1208,10 @@ SQL;
     public function searchPerson($searchFirstName, $searchLastName)
     {
         $wheres = array();
+        // Escape for SQL (the input filter does not escape backslashes).
+        $db = $this->getDbLink();
+        $searchFirstName = $db->real_escape_string((string) $searchFirstName);
+        $searchLastName = $db->real_escape_string((string) $searchLastName);
         if ($searchFirstName) {
             $wheres[] = "firstname LIKE '%{$searchFirstName}%'";
         }
